@@ -1,3 +1,3 @@
 export const isAuthenticated = () => {
-  return !!localStorage.getItem("user");
-};
+  return !!localStorage.getItem('token')
+}
