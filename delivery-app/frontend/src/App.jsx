@@ -25,12 +25,12 @@ function App() {
 
         {/* Privadas — envueltas en ProtectedRoute */}
         <Route path="/home"      element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/addresses" element={<AddressesPage />} />
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+        <Route path="/addresses" element={<ProtectedRoute><AddressesPage /></ProtectedRoute>} />
         <Route path="/cart"      element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
         <Route path="/checkout"  element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
-        <Route path="/orders"    element={<OrdersPage />} />
-        <Route path="/orders/:id" element={<OrderDetailPage />} />
+        <Route path="/orders"    element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
+        <Route path="/orders/:id" element={<ProtectedRoute><OrderDetailPage /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   )
