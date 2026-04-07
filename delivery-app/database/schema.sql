@@ -1,3 +1,7 @@
+CREATE DATABASE IF NOT EXISTS uber_eats_clone;
+USE uber_eats_clone;
+Show tables;
+
 CREATE TABLE `users` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
