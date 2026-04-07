@@ -10,6 +10,9 @@ export default {
         brand: {
           red: '#EF4444',
           dark: '#111827',
+          primary: "#f97316",
+          secondary: "#f5efe6",
+          sidebar: "#fffaf3"
         }
       },
     },
