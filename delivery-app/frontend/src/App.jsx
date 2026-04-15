@@ -1,7 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import ProtectedRoute from './ProtectedRoute'
 
-// Pages
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -12,25 +10,28 @@ import OrdersPage from './pages/OrdersPage'
 import OrderDetailPage from './pages/OrderDetailPage'
 import ProfilePage from './pages/ProfilePage'
 
+import RestaurantPage from './pages/RestaurantPage'
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Si entra a "/" lo manda al login (o a home si ya está logueado) */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
 
-        {/* Públicas */}
-        <Route path="/login"    element={<LoginPage />} />
+        <Route path="/" element={<Navigate to="/restaurant" replace />} />
+
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
 
-        {/* Privadas — envueltas en ProtectedRoute */}
-        <Route path="/home"      element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-        <Route path="/addresses" element={<ProtectedRoute><AddressesPage /></ProtectedRoute>} />
-        <Route path="/cart"      element={<ProtectedRoute><CartPage /></ProtectedRoute>} />
-        <Route path="/checkout"  element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
-        <Route path="/orders"    element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
-        <Route path="/orders/:id" element={<ProtectedRoute><OrderDetailPage /></ProtectedRoute>} />
+        <Route path="/restaurant" element={<RestaurantPage />} />
+
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/addresses" element={<AddressesPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/orders/:id" element={<OrderDetailPage />} />
+
       </Routes>
     </BrowserRouter>
   )
