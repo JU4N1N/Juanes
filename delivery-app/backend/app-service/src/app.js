@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config(); 
 
 const app = express();
 
@@ -7,23 +8,25 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Importar rutas
+// Importar rutas 
 const orderRoutes = require("./routes/orderRoutes");
 const restaurantRoutes = require("./routes/restaurantRoutes");
+const profileRoutes = require("./routes/profileRoutes"); 
 
-// Usar rutas
+// Usar rutas 
 app.use("/api", orderRoutes);
 app.use("/api", restaurantRoutes);
+app.use("/api", profileRoutes); 
 
-// Ruta base (para probar que el server funciona)
+// Ruta base
 app.get("/", (req, res) => {
   res.send("API funcionando 🚀");
 });
 
-// Puerto
+// Puerto 
 const PORT = process.env.PORT || 3000;
 
-// Levantar servidor
+// Servidor
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
