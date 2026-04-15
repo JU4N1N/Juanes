@@ -1,7 +1,9 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const UserModel = require('../models/userModel');
-require('dotenv').config();
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import UserModel from '../models/userModel.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const AuthController = {
     // Registro de usuario
@@ -152,4 +154,4 @@ const AuthController = {
     }
 };
 
-module.exports = AuthController;
+export default AuthController;

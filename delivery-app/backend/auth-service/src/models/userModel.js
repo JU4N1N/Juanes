@@ -1,4 +1,4 @@
-const db = require('../db');
+import db from '../config/db.js';
 
 const UserModel = {
     // Crear un nuevo usuario
@@ -33,4 +33,4 @@ const UserModel = {
     }
 };
 
-module.exports = UserModel;
+export default UserModel;
