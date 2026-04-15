@@ -1,24 +1,32 @@
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getMenuByRestaurant } from "../services/restaurantService";
 import { addToCart } from "../services/cartService";
-import { useNavigate } from "react-router-dom";
 
 function RestaurantPage() {
-  const products = [
-    { id: 1, name: "Pizza", price: 140, description: "Pizza clásica con queso" },
-    { id: 2, name: "Hamburguesa", price: 80, description: "Hamburguesa sencilla" },
-    { id: 3, name: "Tacos", price: 60, description: "Orden de tacos" },
-    { id: 4, name: "Refresco", price: 20, description: "Bebida fría" }
-  ];
+  const { id } = useParams(); // id del restaurante
   const navigate = useNavigate();
+
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchMenu = async () => {
+      const data = await getMenuByRestaurant(id);
+      setProducts(data);
+    };
+
+    fetchMenu();
+  }, [id]);
 
   return (
     <div className="min-h-screen bg-[#f5f1eb] p-6">
 
       <h1 className="text-3xl font-bold mb-6 text-gray-800">
-         Menú del Restaurante
+        Menú del Restaurante
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
+
         {products.map(product => (
           <div 
             key={product.id}
@@ -40,24 +48,29 @@ function RestaurantPage() {
 
             <button
               onClick={() => {
-                addToCart(product);
-                alert("Producto agregado al carrito");
+                addToCart({
+                  id: product.id,
+                  name: product.name,
+                  price: product.price
+                });
               }}
               className="mt-4 bg-orange-500 hover:bg-orange-600 text-white py-2 rounded-xl transition"
             >
               Agregar al carrito
             </button>
-            
+
           </div>
         ))}
 
       </div>
+
       <button
-              onClick={() => navigate("/cart")}
-                  className="mb-4 bg-orange-500 text-white px-4 py-2 rounded"
-            >
-              Ir al carrito 
-            </button>
+        onClick={() => navigate("/cart")}
+        className="mt-6 bg-orange-500 text-white px-4 py-2 rounded"
+      >
+        Ir al carrito
+      </button>
+
     </div>
   );
 }

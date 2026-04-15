@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Card from "../components/Card";
 import { getRestaurants } from "../services/restaurantService";
 
 const HomePage = () => {
   const [restaurants, setRestaurants] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -38,27 +40,36 @@ const HomePage = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           {restaurants.map((restaurant) => (
-            <Card
+            <div
               key={restaurant.id}
-              title={restaurant.name}
-              subtitle={restaurant.description}
+              onClick={() => navigate(`/restaurant/${restaurant.id}`)}
+              className="cursor-pointer transform hover:scale-105 transition"
             >
-              {/* IMAGEN */}
-              <img
-                src={
-                  restaurant.image_url ||
-                  "https://via.placeholder.com/300"
-                }
-                alt={restaurant.name}
-                className="w-full h-40 object-cover rounded-lg mb-3"
-              />
+              <Card
+                title={restaurant.name}
+                subtitle={restaurant.description}
+              >
+                {/* IMAGEN */}
+                <img
+                  src={
+                    restaurant.image_url ||
+                    "https://via.placeholder.com/300"
+                  }
+                  alt={restaurant.name}
+                  className="w-full h-40 object-cover rounded-lg mb-3"
+                />
 
-              {/* CATEGORÍA */}
-              <span className="inline-block text-xs bg-orange-100 text-[#f97316] px-3 py-1 rounded-full mb-2">
-                {restaurant.category}
-              </span>
+                {/* CATEGORÍA */}
+                <span className="inline-block text-xs bg-orange-100 text-[#f97316] px-3 py-1 rounded-full mb-2">
+                  {restaurant.category}
+                </span>
 
-            </Card>
+                {/* CTA */}
+                <button className="mt-2 w-full bg-orange-500 text-white py-2 rounded-lg">
+                  Ver menú
+                </button>
+              </Card>
+            </div>
           ))}
 
         </div>

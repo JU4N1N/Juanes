@@ -5,18 +5,17 @@ const orderModel = require("../models/orderModel");
 // Crear pedido
 const createOrder = async (req, res) => {
   try {
-    const { user_id, items, address } = req.body;
+    const { user_id, restaurant_id, items, address } = req.body;
 
-    // Validaciones básicas
-    if (!user_id || !items || items.length === 0 || !address) {
+    if (!user_id || !restaurant_id || !items || items.length === 0 || !address) {
       return res.status(400).json({
         message: "Datos incompletos",
       });
     }
 
-    // Llamar al modelo
     const order = await orderModel.createOrder({
       user_id,
+      restaurant_id,
       items,
       address,
     });
@@ -25,7 +24,7 @@ const createOrder = async (req, res) => {
   } catch (error) {
     console.error("Error al crear pedido:", error);
     return res.status(500).json({
-      message: "Error interno del servidor",
+      message: error.message || "Error interno del servidor",
     });
   }
 };

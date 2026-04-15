@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api/restaurants";
+const API_URL = "/api/restaurants";
 
 // LISTA DE RESTAURANTES (lo usa Front 2)
 export const getRestaurants = async () => {

@@ -2,8 +2,12 @@
 
 const db = require("../config/db");
 
-const createOrder = async ({ user_id, items, address }) => {
+const createOrder = async ({ user_id, restaurant_id, items, address }) => {
   try {
+    if (!items || items.length === 0) {
+      throw new Error("No hay items en la orden");
+    }
+
     // 1. Obtener IDs de productos
     const itemIds = items.map((item) => item.id);
 
@@ -13,14 +17,15 @@ const createOrder = async ({ user_id, items, address }) => {
       [itemIds]
     );
 
-    // 3. Mapear productos por id (para acceso rápido)
+    // 3. Mapear productos
     const productMap = {};
     products.forEach((p) => {
       productMap[p.id] = p;
     });
 
-    // 4. Construir order_items + calcular total
+    // 4. Construir order_items + total
     let total = 0;
+
     const orderItems = items.map((item) => {
       const product = productMap[item.id];
 
@@ -39,16 +44,20 @@ const createOrder = async ({ user_id, items, address }) => {
       };
     });
 
-    // 5. Insertar en orders
+    if (!restaurant_id) {
+      throw new Error("restaurant_id es requerido");
+    }
+
+    // 5. Insertar en orders (CORREGIDO)
     const [orderResult] = await db.query(
-      `INSERT INTO orders (user_id, total_price, status, delivery_address)
-       VALUES (?, ?, 'Pendiente', ?)`,
-      [user_id, total, address]
+      `INSERT INTO orders (user_id, restaurant_id, total_price, status, delivery_address)
+       VALUES (?, ?, ?, 'Pendiente', ?)`,
+      [user_id, restaurant_id, total, address]
     );
 
     const orderId = orderResult.insertId;
 
-    // 6. Insertar order_items (snapshot)
+    // 6. Insertar order_items
     for (const item of orderItems) {
       await db.query(
         `INSERT INTO order_items 
@@ -64,11 +73,12 @@ const createOrder = async ({ user_id, items, address }) => {
       );
     }
 
-    // 7. Respuesta final
+    // 7. Respuesta
     return {
       id: orderId,
       total_price: total,
       status: "Pendiente",
+      items: orderItems,
     };
   } catch (error) {
     throw error;
