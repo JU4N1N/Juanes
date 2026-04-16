@@ -1,47 +1,33 @@
-const Card = ({ title, subtitle, children, footer, status }) => {
+import { motion } from 'framer-motion';
+import { twMerge } from 'tailwind-merge';
 
-  const statusStyles = {
-    success: "bg-green-100 text-green-700",
-    warning: "bg-yellow-100 text-yellow-700",
-    danger: "bg-red-100 text-red-700",
-    default: "bg-gray-100 text-gray-700"
-  };
-
+const Card = ({ children, className, hover = true }) => {
   return (
-    <div className="bg-white rounded-2xl shadow-md p-6 hover:shadow-lg transition w-full">
-
-      {/* Header */}
-      {(title || status) && (
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="font-semibold text-gray-900">{title}</h2>
-
-          {status && (
-            <span className={`text-xs px-3 py-1 rounded-full ${statusStyles[status] || statusStyles.default}`}>
-              {status}
-            </span>
-          )}
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      whileHover={hover ? { y: -8, transition: { duration: 0.2 } } : {}}
+      className={twMerge(
+        'bg-white rounded-[2rem] p-4 shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden relative',
+        className
       )}
-
-      {/* Subtitle */}
-      {subtitle && (
-        <p className="text-sm text-gray-500 mb-3">{subtitle}</p>
-      )}
-
-      {/* Content */}
-      <div className="text-gray-700">
-        {children}
-      </div>
-
-      {/* Footer */}
-      {footer && (
-        <div className="mt-4">
-          {footer}
-        </div>
-      )}
-
-    </div>
+    >
+      {children}
+    </motion.div>
   );
 };
+
+// Sub-componente para mantener la consistencia en imágenes
+Card.Image = ({ src, alt, badge }) => (
+  <div className="relative w-full h-48 mb-4 overflow-hidden rounded-[1.5rem]">
+    {badge && (
+      <span className="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-orange-600 shadow-sm">
+        {badge}
+      </span>
+    )}
+    <img src={src} alt={alt} className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-500" />
+  </div>
+);
 
 export default Card;

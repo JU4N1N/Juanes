@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config(); 
 
 const app = express();
 
@@ -11,12 +10,10 @@ app.use(express.json());
 // Importar rutas 
 const orderRoutes = require("./routes/orderRoutes");
 const restaurantRoutes = require("./routes/restaurantRoutes");
-const profileRoutes = require("./routes/profileRoutes"); 
 
 // Usar rutas 
 app.use("/api", orderRoutes);
-app.use("/api", restaurantRoutes);
-app.use("/api", profileRoutes); 
+app.use("/api", restaurantRoutes); 
 
 // Ruta base
 app.get("/", (req, res) => {

@@ -2,15 +2,34 @@ import React, { useState } from 'react';
 import { Mail, Lock, LogIn, ChevronRight, Sparkles, Bike } from 'lucide-react';
 // Importamos framer-motion para dar vida
 import { motion } from 'framer-motion'; 
+import { login } from "../services/authService";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Login attempt:', { email, password });
-    };
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+        const data = await login(email, password);
+
+        // Guardar sesión
+        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("user", JSON.stringify(data.data.user));
+
+        alert("Login exitoso 🚀");
+
+        navigate("/home"); // o donde quieras mandar
+
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+};
 
     // Variantes de animación para elementos que entran en cascada
     const containerVariants = {

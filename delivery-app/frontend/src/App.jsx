@@ -1,40 +1,141 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-import HomePage from './pages/HomePage'
-import LoginPage from './pages/LoginPage'
-import RegisterPage from './pages/RegisterPage'
-import AddressesPage from './pages/AddressesPage'
-import CartPage from './pages/CartPage'
-import CheckoutPage from './pages/CheckoutPage'
-import OrdersPage from './pages/OrdersPage'
-import OrderDetailPage from './pages/OrderDetailPage'
-import ProfilePage from './pages/ProfilePage'
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import AddressesPage from './pages/AddressesPage';
+import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrdersPage from './pages/OrdersPage';
+import OrderDetailPage from './pages/OrderDetailPage';
+import ProfilePage from './pages/ProfilePage';
+import RestaurantPage from './pages/RestaurantPage';
 
-import RestaurantPage from './pages/RestaurantPage'
+//ProtectedRoute
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+//PublicRoute
+const PublicRoute = ({ children }) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    return <Navigate to="/home" replace />;
+  }
+
+  return children;
+};
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Navigate to="/restaurant" replace />} />
+        {/* ROOT */}
+        <Route path="/" element={<Navigate to="/home" replace />} />
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        {/* PUBLICAS */}
+        <Route 
+          path="/login" 
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          } 
+        />
 
-        <Route path="/restaurant/:id" element={<RestaurantPage />} />
+        <Route 
+          path="/register" 
+          element={
+            <PublicRoute>
+              <RegisterPage />
+            </PublicRoute>
+          } 
+        />
 
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/addresses" element={<AddressesPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/orders" element={<OrdersPage />} />
-        <Route path="/orders/:id" element={<OrderDetailPage />} />
+        {/* PROTEGIDAS */}
+        <Route 
+          path="/home" 
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/restaurant/:id" 
+          element={
+            <ProtectedRoute>
+              <RestaurantPage />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/addresses" 
+          element={
+            <ProtectedRoute>
+              <AddressesPage />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/cart" 
+          element={
+            <ProtectedRoute>
+              <CartPage />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/checkout" 
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/orders" 
+          element={
+            <ProtectedRoute>
+              <OrdersPage />
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/orders/:id" 
+          element={
+            <ProtectedRoute>
+              <OrderDetailPage />
+            </ProtectedRoute>
+          } 
+        />
 
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
