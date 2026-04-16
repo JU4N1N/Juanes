@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   User, 
   ShoppingBag, 
@@ -10,15 +10,42 @@ import {
   Bike
 } from "lucide-react";
 import { twMerge } from "tailwind-merge";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const [cartCount, setCartCount] = useState(0);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
+
+  // 🔥 Obtener cantidad del carrito
+  const getCartCount = () => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Si manejas quantity:
+    const total = cart.reduce((acc, item) => acc + (item.quantity || 1), 0);
+
+    setCartCount(total);
+  };
+
+  useEffect(() => {
+    getCartCount();
+
+    // 🔥 Escuchar cambios (evento custom)
+    const handleCartUpdate = () => {
+      getCartCount();
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+
+    return () => {
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+    };
+  }, []);
 
   // Estilo base para los links de navegación
   const navItemStyles = ({ isActive }) =>
@@ -31,7 +58,6 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-[100] px-6 py-4">
-      {/* Contenedor Flotante con Glassmorphism */}
       <div className="max-w-7xl mx-auto bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg shadow-slate-200/50 rounded-[2rem] px-8 py-3 flex items-center justify-between">
         
         {/* LOGO */}
@@ -44,7 +70,7 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* LINKS CENTRALES */}
+        {/* LINKS */}
         <div className="hidden md:flex items-center gap-2">
           <NavLink to="/home" className={navItemStyles}>
             <Home size={18} />
@@ -62,19 +88,30 @@ const Navbar = () => {
           </NavLink>
         </div>
 
-        {/* ACCIONES DERECHA */}
+        {/* DERECHA */}
         <div className="flex items-center gap-3 pl-6 border-l border-slate-100">
           
-          {/* Botón de Carrito con Indicador */}
+          {/* 🛒 CARRITO DINÁMICO */}
           <Link 
             to="/cart" 
             className="p-3 text-slate-600 hover:text-orange-500 hover:bg-orange-50 rounded-xl transition-colors relative"
           >
             <ShoppingBag size={22} />
-            {/* Badge de cantidad (opcional/estático por ahora) */}
-            <span className="absolute top-2 right-2 w-4 h-4 bg-orange-600 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white">
-              2
-            </span>
+
+            <AnimatePresence>
+              {cartCount > 0 && (
+                <motion.span
+                  key={cartCount}
+                  initial={{ scale: 0, y: -5 }}
+                  animate={{ scale: 1, y: 0 }}
+                  exit={{ scale: 0 }}
+                  transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                  className="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 bg-orange-600 text-white text-[10px] font-black flex items-center justify-center rounded-full border-2 border-white"
+                >
+                  {cartCount}
+                </motion.span>
+              )}
+            </AnimatePresence>
           </Link>
 
           {/* Perfil */}
@@ -90,7 +127,7 @@ const Navbar = () => {
             <User size={22} />
           </NavLink>
 
-          {/* Logout con estilo de botón fantasma pero definido */}
+          {/* Logout */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

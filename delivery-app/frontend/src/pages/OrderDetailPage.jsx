@@ -76,7 +76,7 @@ const OrderDetailPage = () => {
             <ChevronLeft size={20} />
             Volver a mis pedidos
           </button>
-          <span className="text-sm font-black text-slate-300 uppercase tracking-widest">Ticket #{order.id}</span>
+          <span className="text-sm font-black text-slate-300 uppercase tracking-widest"></span>
         </div>
 
         {/* --- TRACKER DE ESTADO (Timeline) --- */}

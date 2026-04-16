@@ -9,6 +9,7 @@ import { getMenuByRestaurant } from "../services/restaurantService";
 import { addToCart } from "../services/cartService";
 
 function RestaurantPage() {
+  const [addedId, setAddedId] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -30,15 +31,19 @@ function RestaurantPage() {
   }, [id]);
 
   const handleAddToCart = (product) => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      restaurant_id: id
-    });
-    // Aquí podrías disparar un Toast en lugar de un alert
-    console.log("Agregado:", product.name);
-  };
+  addToCart({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    restaurant_id: id
+  });
+
+  setAddedId(product.id);
+
+  setTimeout(() => {
+    setAddedId(null);
+  }, 800);
+};
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -153,8 +158,14 @@ function RestaurantPage() {
                       <motion.button
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
+                        animate={addedId === product.id ? { scale: [1, 1.3, 1] } : {}}
+                        transition={{ duration: 0.3 }}
                         onClick={() => handleAddToCart(product)}
-                        className="bg-orange-500 text-white p-3 rounded-xl shadow-lg shadow-orange-500/30 hover:bg-orange-600 transition-all"
+                        className={`p-3 rounded-xl shadow-lg transition-all ${
+                          addedId === product.id
+                            ? "bg-green-500 shadow-green-500/30"
+                            : "bg-orange-500 shadow-orange-500/30 hover:bg-orange-600"
+                        }`}
                       >
                         <Plus size={20} strokeWidth={3} />
                       </motion.button>

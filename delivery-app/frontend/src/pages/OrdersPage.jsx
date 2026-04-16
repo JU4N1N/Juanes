@@ -115,12 +115,11 @@ const OrdersPage = () => {
                           <StatusIcon size={14} />
                           {statusConfig.label}
                         </div>
-                        <span className="text-slate-400 text-xs font-bold">#{order.id}</span>
                       </div>
 
                       {/* Info Principal */}
                       <div>
-                        <h3 className="text-xl font-bold text-slate-900">Pedido de Juanes</h3>
+                        <h3 className="text-xl font-bold text-slate-900">Pedido #{orders.length - index}</h3>
                         <div className="flex items-center gap-2 text-slate-500 text-sm mt-1 font-medium">
                           <Calendar size={14} />
                           {new Date(order.created_at).toLocaleDateString('es-MX', { 

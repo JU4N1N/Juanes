@@ -139,7 +139,7 @@ const fetchAddresses = async () => {
         {/* LISTADO DE DIRECCIONES */}
         <div className="grid md:grid-cols-2 gap-6">
           <AnimatePresence>
-            {addresses.map((addr) => (
+            {addresses.map((addr, index) => (
               <motion.div
                 key={addr.id}
                 layout
@@ -187,7 +187,7 @@ const fetchAddresses = async () => {
                           <div className="bg-slate-100 p-2 rounded-xl text-slate-500 group-hover:bg-orange-100 group-hover:text-orange-600 transition-colors">
                             <Navigation size={20} />
                           </div>
-                          <span className="text-[10px] font-black text-slate-300 uppercase">ID: {addr.id}</span>
+                          <span className="text-[10px] font-black text-slate-300 uppercase">Dirección #{index + 1}</span>
                         </div>
                         
                         <div>

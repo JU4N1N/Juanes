@@ -9,6 +9,7 @@ export const getCart = () => {
 // Guardar carrito
 export const saveCart = (cart) => {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  window.dispatchEvent(new Event("cartUpdated"));
 };
 
 // Agregar producto

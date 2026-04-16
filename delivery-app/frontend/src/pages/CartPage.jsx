@@ -2,18 +2,34 @@ import { useEffect, useState } from "react";
 import { getCart, saveCart } from "../services/cartService";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBasket, Trash2, ArrowRight, CreditCard, MapPin, ReceiptText } from "lucide-react";
+import { ShoppingBasket, Trash2, ArrowRight, CreditCard, MapPin, ReceiptText, ChevronDown } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Card from "../components/Card";
 import Button from "../components/Button";
+import { getAddresses } from "../services/profileService";
 
 function CartPage() {
   const [cart, setCart] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const data = getCart();
     setCart(data);
+
+    const loadAddresses = async () => {
+      try {
+        const addrData = await getAddresses();
+        setAddresses(addrData);
+        if (addrData.length > 0) {
+          setSelectedAddress(addrData[0]);
+        }
+      } catch (error) {
+        console.error("Error cargando direcciones:", error);
+      }
+    };
+    loadAddresses();
   }, []);
 
   const user = JSON.parse(localStorage.getItem("user"));
@@ -28,36 +44,34 @@ function CartPage() {
         navigate("/login");
         return;
       }
-
       if (cart.length === 0) return;
-
+      if (!selectedAddress) {
+        alert("Por favor selecciona una dirección de envío");
+        return;
+      }
       const items = cart.map(item => ({
         id: item.id,
         quantity: item.quantity || 1
       }));
-
       const restaurant_id = cart[0]?.restaurant_id || 1;
-
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: user.id,
           restaurant_id,
-          address: "Mi casa", 
+          address: selectedAddress.address_line,
           items
         })
       });
-
       const data = await response.json();
       if (!response.ok) throw new Error(data.message);
-
       saveCart([]);
       setCart([]);
       navigate("/orders");
-
     } catch (error) {
       console.error(error);
+      alert("Error al procesar el pedido");
     }
   };
 
@@ -158,29 +172,65 @@ function CartPage() {
                     <span>Envío</span>
                     <span className="text-green-600 font-bold">Gratis</span>
                   </div>
-                  <div className="flex items-start gap-2 text-slate-400 text-xs bg-slate-50 p-3 rounded-xl">
-                    <MapPin size={14} className="mt-0.5" />
-                    <p>Entrega en: <span className="text-slate-700 font-bold">C.U., Ciudad de México</span></p>
+                  
+                  {/* --- SELECT DE DIRECCIÓN MEJORADO --- */}
+                  {addresses.length > 0 && (
+                    <div className="relative group">
+                      <label className="text-[10px] uppercase tracking-widest font-black text-slate-400 mb-1.5 ml-1 block">
+                        Dirección de Entrega
+                      </label>
+                      <div className="relative flex items-center">
+                        <select
+                          className="w-full appearance-none bg-white border-2 border-slate-100 text-sm font-bold text-slate-700 py-3.5 pl-4 pr-10 rounded-2xl cursor-pointer focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-500/10 transition-all"
+                          value={selectedAddress?.id || ""}
+                          onChange={(e) => {
+                            const addr = addresses.find(a => a.id === parseInt(e.target.value));
+                            setSelectedAddress(addr);
+                          }}
+                        >
+                          {addresses.map(addr => (
+                            <option key={addr.id} value={addr.id}>
+                              {addr.address_line}, {addr.city}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute right-4 pointer-events-none text-slate-400 group-focus-within:text-orange-500 transition-colors">
+                          <ChevronDown size={18} strokeWidth={3} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex items-start gap-3 text-slate-500 text-xs bg-orange-50/50 p-4 rounded-2xl border border-orange-100/50">
+                    <div className="bg-orange-500 p-1.5 rounded-lg text-white">
+                      <MapPin size={14} />
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-400">Entregar ahora en:</p>
+                      <p className="text-slate-900 font-bold text-[13px] leading-tight mt-0.5">
+                        {selectedAddress ? `${selectedAddress.address_line}, ${selectedAddress.city}` : "Cargando dirección..."}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex justify-between items-end">
                   <span className="text-slate-900 font-bold">Total a pagar</span>
-                  <span className="text-3xl font-black text-slate-950">${total} <small className="text-xs uppercase">mxn</small></span>
+                  <span className="text-3xl font-black text-slate-950">${total} <small className="text-xs uppercase font-bold text-slate-400">mxn</small></span>
                 </div>
 
                 <Button 
                   onClick={handleCheckout}
                   disabled={cart.length === 0}
-                  className="w-full py-5 rounded-2xl text-xl"
+                  className="w-full py-5 rounded-2xl text-xl shadow-xl shadow-orange-500/20"
                   variant="secondary"
                 >
                   Finalizar Pedido
                   <ArrowRight size={20} />
                 </Button>
 
-                <p className="text-center text-xs text-slate-400 font-medium">
-                  Al finalizar, aceptas los términos de servicio de AH Studio.
+                <p className="text-center text-[10px] text-slate-400 font-medium uppercase tracking-wider">
+                  Pago seguro procesado por AH Studio.
                 </p>
               </Card>
             </motion.div>
