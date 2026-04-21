@@ -1,38 +1,7 @@
 --  Tablas: restaurants, menu_items
-DROP TABLE IF EXISTS menu_items;
-DROP TABLE IF EXISTS restaurants;
+USE uber_eats_clone;
 
-
--- 1. Tabla restaurants
-CREATE TABLE restaurants (
-    id          INT PRIMARY KEY AUTO_INCREMENT,
-    name        VARCHAR(100)  NOT NULL,
-    description TEXT,
-    image_url   VARCHAR(255),
-    category    VARCHAR(50),
-    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
-
-
--- 2. Tabla menu_items
-CREATE TABLE menu_items (
-    id            INT PRIMARY KEY AUTO_INCREMENT,
-    restaurant_id INT           NOT NULL,
-    name          VARCHAR(100)  NOT NULL,
-    description   TEXT,
-    price         DECIMAL(8,2)  NOT NULL,
-    image_url     VARCHAR(255),
-    available     BOOLEAN       DEFAULT TRUE,
-    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    CONSTRAINT fk_restaurant FOREIGN KEY (restaurant_id) REFERENCES restaurants(id) ON DELETE CASCADE
-);
-
-
-
--- 3. INSERTs — restaurants (15 restaurantes)
+-- INSERTs — restaurants (15 restaurantes)
 INSERT INTO restaurants (name, description, image_url, category) VALUES
 -- 1
 ('La Burguesía',

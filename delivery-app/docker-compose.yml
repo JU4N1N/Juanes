@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: delivery_app
+    ports:
+      - "3307:3307"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+
+  auth-service:
+    build: ./backend/auth-service
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./backend/auth-service/.env
+    depends_on:
+      - mysql
+
+  app-service:
+    build: ./backend/app-service
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/app-service/.env
+
+volumes:
+  mysql_data:
