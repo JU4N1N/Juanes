@@ -1,238 +1,190 @@
-# 🚀 Delivery App — Guía de Ejecución
+# Delivery Plus
 
-Este proyecto está dividido en 3 partes principales:
+Delivery Plus es una aplicación web de delivery de comida inspirada en Uber Eats, desarrollada como proyecto académico por un equipo de 10 personas. La app permite a los usuarios explorar restaurantes reales, armar su carrito, realizar pedidos y gestionar su perfil, todo dentro de una interfaz moderna construida con React y Tailwind.
 
-* 🟣 Frontend (React)
-* 🔵 Backend (2 servicios)
-
-  * Auth Service
-  * App Service
-* 🗄️ Base de datos (MySQL)
+A diferencia de una app de delivery real, Delivery Plus está pensada para ser simple y entendible: cada módulo funciona de forma independiente, el carrito vive en el navegador sin necesidad de backend, y el código está dividido de manera que cada integrante del equipo pueda trabajar su parte sin bloquear a los demás.
 
 ---
 
-# 🧠 REQUISITOS
+## Como funciona
 
-Antes de empezar, asegúrate de tener:
+El usuario entra a la app, se registra o inicia sesión, y desde ese momento tiene acceso a un catálogo de restaurantes cargados desde la base de datos. Puede entrar a cualquier restaurante, ver su menú y agregar productos al carrito. Cuando está listo, va al checkout, ingresa su dirección y confirma el pedido. Todo queda guardado y puede consultarlo después desde su historial de pedidos. También puede editar su perfil y administrar sus direcciones en cualquier momento.
 
-* Node.js instalado (v18 o superior)
-* MySQL instalado y corriendo
-
----
-
-# 🗄️ 1. BASE DE DATOS
-
-1. Abre tu gestor de MySQL (Workbench o terminal)
-
-2. Crea la base de datos:
-
-```sql
-CREATE DATABASE delivery_app;
-```
-
-3. Ejecuta los archivos dentro de:
-
-```
-database/
-```
-
-👉 Primero:
-
-* `schema.sql`
-
-👉 Luego:
-
-* `seed.sql`
+La sesión se mantiene en el navegador y las rutas están protegidas: si el usuario no está autenticado, la app lo redirige automáticamente al login.
 
 ---
 
-# 🔐 CONFIGURAR VARIABLES DE ENTORNO
+## Tabla de contenidos
 
-En cada servicio backend hay un archivo `.env`
-
----
-
-## 📁 auth-service/.env
-
-```env
-PORT=4000
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=tu_password
-DB_NAME=delivery_app
-```
+- [Stack](#stack)
+- [Requisitos](#requisitos)
+- [Estructura del proyecto](#estructura-del-proyecto)
+- [Módulos](#módulos)
+- [Base de datos](#base-de-datos)
+- [Endpoints](#endpoints)
+- [Equipo](#equipo)
+- [Cómo correr el proyecto](#cómo-correr-el-proyecto)
+- [Errores comunes](#errores-comunes)
 
 ---
 
-## 📁 app-service/.env
+## Stack
 
-```env
-PORT=4001
-DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=tu_password
-DB_NAME=delivery_app
-```
+| Capa | Tecnología |
+| Frontend | React + Vite + Tailwind CSS |
+| Backend | Node.js (microservicios) |
+| Base de datos | MySQL |
+| Auth | JWT + localStorage |
 
 ---
 
-# 📦 INSTALAR DEPENDENCIAS
+## Requisitos
 
-Cada parte del proyecto tiene su propio `package.json`.
+Antes de empezar, asegúrate de tener instalado:
 
-Debes instalar dependencias en cada una:
-
----
-
-## 🟣 Frontend
-
-```bash
-cd frontend
-npm install
-```
+- Node.js v18 o superior
+- MySQL corriendo localmente
 
 ---
 
-## 🔵 Auth Service
+## Estructura del proyecto
 
-```bash
-cd backend/auth-service
-npm install
-```
-
----
-
-## 🔵 App Service
-
-```bash
-cd backend/app-service
-npm install
-```
-
----
-
-# ▶️ EJECUTAR EL PROYECTO (POR SEPARADO)
-
-Debes abrir **3 terminales diferentes**.
-
----
-
-## 🟣 Terminal 1 — Frontend
-
-```bash
-cd frontend
-npm run dev
-```
-
-👉 Corre en:
-
-```
-http://localhost:3000
-```
-
----
-
-## 🔐 Terminal 2 — Auth Service
-
-```bash
-cd backend/auth-service
-npm run dev
-```
-
-👉 Corre en:
-
-```
-http://localhost:4000
-```
-
----
-
-## 🍔 Terminal 3 — App Service
-
-```bash
-cd backend/app-service
-npm run dev
-```
-
-👉 Corre en:
-
-```
-http://localhost:4001
-```
-
----
-
-# 🚀 OPCIONAL — EJECUTAR TODO JUNTO
-
-Desde la raíz del proyecto:
-
-```bash
-npm run dev
-```
-
-👉 Esto levanta todo automáticamente
-
----
-
-# 🧩 ESTRUCTURA DEL PROYECTO
-
-```
-delivery-app/
-│
-├── frontend/          → Interfaz (React)
+delivery-plus/
+├── frontend/
+│   ├── src/
+│   │   ├── pages/          # Una por cada pantalla
+│   │   ├── components/     # Piezas reutilizables (Navbar, Cards...)
+│   │   └── services/       # Conexión con el backend
+│   └── ...
 ├── backend/
-│   ├── auth-service/  → Usuarios, login, perfil
-│   └── app-service/   → Restaurantes, pedidos
-│
-├── database/          → SQL (estructura + datos)
+│   ├── auth-service/       # Microservicio de autenticación
+│   └── app-service/        # Restaurantes, pedidos y perfil
+└── database/
+    ├── schema.sql
+    └── seed.sql
+
+---
+
+## Módulos
+
+### 1. Auth — Login / Register
+Manejo de sesión del usuario. Al autenticarse, los datos se guardan en `localStorage`. Las rutas protegidas redirigen al login si no hay sesión activa.
+
+- `LoginPage.jsx` — Formulario de email + password
+- `RegisterPage.jsx` — Registro con nombre, email, teléfono y password
+- `ProtectedRoute.jsx` — Guarda de rutas privadas
+- `authService.js` — Llamadas al backend de auth
+
+### 2. Restaurantes — Catálogo y Menú
+Consume la base de datos real para listar restaurantes y mostrar el menú de cada uno.
+
+- `HomePage.jsx` — Cards de restaurantes
+- `RestaurantPage.jsx` — Menú del restaurante con botón "Agregar al carrito"
+- `Navbar.jsx` — Navegación global
+- `restaurantService.js` — Llamadas al backend
+
+### 3. Carrito + Checkout
+El carrito vive completamente en `localStorage` (sin backend). El checkout envía el pedido final al servidor.
+
+- `CartPage.jsx` — Lista de productos, cambio de cantidades y total
+- `CheckoutPage.jsx` — Resumen del pedido, dirección y confirmación
+- `cartService.js` — Lógica local del carrito
+- `orderService.js` — Creación del pedido en el backend
+
+### 4. Pedidos
+Historial de órdenes realizadas por el usuario autenticado.
+
+- `OrdersPage.jsx` — Lista de pedidos
+- `OrderDetailPage.jsx` — Detalle de un pedido específico
+
+### 5. Perfil + Direcciones
+Edición de datos del usuario y CRUD completo de direcciones guardadas.
+
+- `ProfilePage.jsx` — Editar nombre, email y teléfono
+- `AddressesPage.jsx` — Ver, agregar, editar y eliminar direcciones
+- `profileService.js` — Llamadas al backend de perfil
+
+---
+
+## Base de datos
+
+El proyecto usa 6 tablas principales:
+
+| Tabla | Descripción |
+| `users` | Usuarios registrados |
+| `restaurants` | Restaurantes disponibles |
+| `menu_items` | Platillos por restaurante |
+| `orders` | Pedidos realizados |
+| `order_items` | Productos dentro de cada pedido (con snapshot de nombre y precio) |
+| `addresses` | Direcciones guardadas por usuario |
+
+El archivo `seed.sql` precarga 15 restaurantes y 75 productos para que el equipo de frontend pueda trabajar desde el primer día sin esperar al backend.
+
+---
+
+## Endpoints
+
+### auth-service
+```
+POST /api/auth/register
+POST /api/auth/login
+```
+
+### app-service — Restaurantes
+```
+GET  /api/restaurants
+GET  /api/restaurants/:id
+GET  /api/restaurants/:id/menu
+```
+
+### app-service — Pedidos
+```
+POST /api/orders
+GET  /api/orders
+GET  /api/orders/:id
+```
+
+### app-service — Perfil y Direcciones
+```
+GET    /api/profile
+PUT    /api/profile
+GET    /api/profile/addresses
+POST   /api/profile/addresses
+PUT    /api/profile/addresses/:id
+DELETE /api/profile/addresses/:id
 ```
 
 ---
 
-# ⚠️ ERRORES COMUNES
+## Equipo
 
-## ❌ No corre el backend
+### Frontend
+| Integrante | Responsabilidad | Archivos clave |
+| Front 1 | Auth y protección de rutas | `LoginPage`, `RegisterPage`, `ProtectedRoute`, `authService` |
+| Front 2 | Catálogo de restaurantes | `HomePage`, `Navbar`, `restaurantService` |
+| Front 3 | Menú y carrito local | `RestaurantPage`, `cartService` |
+| Front 4 | Carrito y checkout | `CartPage`, `CheckoutPage`, `orderService` |
+| Front 5 | Perfil, direcciones y pedidos | `ProfilePage`, `AddressesPage`, `OrdersPage`, `profileService` |
 
-✔️ Revisa `.env`
-✔️ Verifica que MySQL esté activo
+### Backend
+| Integrante | Responsabilidad | Archivos clave |
+| Back 1 | Auth service | `authController`, `userModel`, `authRoutes` |
+| Back 2 | Restaurantes | `restaurantController`, `restaurantModel`, `restaurantRoutes` |
+| Back 3 | Pedidos | `orderController`, `orderModel`, `orderRoutes` |
+| Back 4 | Perfil, direcciones y utilidades | `db.js`, middlewares, rutas de perfil |
 
----
-
-## ❌ No conecta a la base de datos
-
-✔️ Usuario / contraseña correctos
-✔️ DB creada (`delivery_app`)
-
----
-
-## ❌ Frontend no carga datos
-
-✔️ Backend corriendo
-✔️ URLs correctas (puertos 4000 / 4001)
-
----
-
-# 🏆 OBJETIVO
-
-Que funcione este flujo:
-
-👉 Login
-👉 Ver restaurantes
-👉 Agregar al carrito
-👉 Crear pedido
-👉 Ver pedidos
-👉 Editar perfil
+### Base de datos
+| Integrante | Responsabilidad | Archivos clave |
+| DB 1 | Schema y datos de prueba | `schema.sql`, `seed.sql` |
 
 ---
 
-# 💬 NOTA FINAL
+## Meta del proyecto
 
-No buscamos perfección técnica.
-
-Buscamos:
-
-* Que funcione
-
----
-
-Si todos hacen su parte, esto sale fácil.
+Login y registro funcional
+Ver lista de restaurantes
+Agregar productos al carrito
+Realizar un pedido
+Ver historial de pedidos
+Editar perfil
+CRUD de direcciones
